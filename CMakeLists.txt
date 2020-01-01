@@ -9,6 +9,7 @@ include_directories("${CMAKE_SOURCE_DIR}/include")
 find_package(Qt5 REQUIRED COMPONENTS
     Core
     Widgets
+    LinguistTools
 )
 
 # Sources
@@ -34,9 +35,10 @@ set(FORMS
 qt5_add_resources(RESOURCES_ADDED "${CMAKE_SOURCE_DIR}/assets/assets.qrc")
 qt5_wrap_ui(sudoku_UI ${FORMS})
 qt5_wrap_cpp(sudoku_MOC ${HEADERS})
+qt5_create_translation(QM_FILES ${HEADERS} ${SOURCES} ${FORMS} ${CMAKE_SOURCE_DIR}/l10n/translation_pt.ts)
 
 # Compile / translate
-add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${sudoku_MOC} ${sudoku_UI} ${RESOURCES_ADDED})
+add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${sudoku_MOC} ${sudoku_UI} ${RESOURCES_ADDED} ${QM_FILES})
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_17)
 target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
