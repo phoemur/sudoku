@@ -8,7 +8,7 @@ before_install:
 
 install:
   - sudo apt-get install -qq qtbase5-dev qtdeclarative5-dev libqt5webkit5-dev libsqlite3-dev
-  - sudo apt-get install -qq qt5-default qttools5-dev-tools qt5-qmake
+  - sudo apt-get install -qq qt5-default qttools5-dev-tools qt5-qmake qttools5-dev
 
 script:
   - cd ${TRAVIS_BUILD_DIR}
