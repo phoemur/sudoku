@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
     QString defaultLocale = QLocale::system().name();
     defaultLocale.truncate(defaultLocale.lastIndexOf('_'));
 
-    if (translator.load(QString("translation_") + defaultLocale))
+    if (translator.load(QString("./translation_") + defaultLocale, QString("./")))
             app.installTranslator(&translator);
 
     //Run

@@ -35,6 +35,8 @@ set(FORMS
 qt5_add_resources(RESOURCES_ADDED "${CMAKE_SOURCE_DIR}/assets/assets.qrc")
 qt5_wrap_ui(sudoku_UI ${FORMS})
 qt5_wrap_cpp(sudoku_MOC ${HEADERS})
+
+#l10n
 qt5_create_translation(QM_FILES ${HEADERS} ${SOURCES} ${FORMS} ${CMAKE_SOURCE_DIR}/l10n/translation_pt.ts)
 
 # Compile / translate
@@ -54,5 +56,10 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 target_link_libraries(${CMAKE_PROJECT_NAME} Qt5::Core Qt5::Widgets)
 
 #Install
-install (TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION bin)
+include(GNUInstallDirs)
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
