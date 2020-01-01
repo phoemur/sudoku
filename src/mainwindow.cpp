@@ -239,11 +239,13 @@ void MainWindow::clear_all()
     for (auto& row : grid)
         row.fill(0);
 
-    for (auto& row : btn_storage)
-        for (auto ptr : row)
+    for (std::size_t i = 0; i < 9; ++i)
+        for (std::size_t j = 0; j < 9; ++j)
         {
-            ptr->clear();
-            ptr->setEditable(true);
+            btn_storage[i][j]->clear();
+            btn_storage[i][j]->setEditable(true);
+            cell_font_black(i, j);
         }
+
     clear_highlights();
 }
