@@ -7,22 +7,23 @@
 #include <QFont>
 
 // Forward declarations
-namespace Ui {
-    class MainWindow;
-}
+namespace Ui {class MainWindow;}
 class MyLineEdit;
 class QGridLayout;
+namespace Sudoku {enum class Difficulty;}
 
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
     Ui::MainWindow* ui;
+    Sudoku::Difficulty dif;
     std::array<std::array<MyLineEdit*,9>,9> btn_storage;
     std::array<std::array<int, 9>, 9> grid;
 
     QGridLayout* layout;
     QFont serifFont;
+
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
@@ -33,6 +34,11 @@ public:
 private slots:
     void about();
     void cell_changed(std::size_t row, std::size_t col);
+    void new_game();
+    void beginner();
+    void intermediate();
+    void hard();
+    void solve();
 
 private:
     void init_board();
@@ -42,6 +48,7 @@ private:
     void clear_highlights();
     void cell_font_blue(std::size_t row, std::size_t col);
     void cell_font_black(std::size_t row, std::size_t col);
+    void clear_all();
 
 };
 

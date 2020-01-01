@@ -16,8 +16,8 @@ public:
     bool isEditable() const {return editable;}
     void setEditable(bool a) {editable = a;}
 
-    std::size_t row;
-    std::size_t col;
+    std::size_t row = 0;
+    std::size_t col = 0;
 
 public slots:
     void back_cursor();

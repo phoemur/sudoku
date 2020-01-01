@@ -4,11 +4,18 @@
 #include <array>
 #include <optional>
 #include <utility>
+#include <random>
 
 namespace Sudoku {
 
 using puzzle_t = std::array<std::array<int, 9>, 9>;
 using namespace std;
+
+enum class Difficulty
+{
+    Easy, Intermediate, Hard
+};
+
 
 /* Searches the grid to find an entry that is still unassigned. If
    found, a pair<row,col> is returned. Otherwise, an empty optional
@@ -115,6 +122,73 @@ bool SolveSudoku(puzzle_t& grid)
         return false; // No solution exists
     }
 }
+
+
+/* Here it would have been better to use a book of many puzzles
+   sorted by difficulty, but I decided to generate puzzles programatically.
+   The risk is to underestimate the real difficulty */
+puzzle_t GeneratePuzzle(Difficulty dif)
+{
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<int> dist(1, 9);
+    puzzle_t grid;
+
+    do
+    {
+        // Fill with zeroes
+        for (auto& row : grid)
+            row.fill(0);
+
+        // Insert 10 random numbers in random positions
+        int i = 0;
+        while (i < 10)
+        {
+            auto x = static_cast<size_t>(dist(gen) - 1);
+            auto y = static_cast<size_t>(dist(gen) - 1);
+            int num = dist(gen);
+
+            if (isSafe(grid, x, y, num))
+            {
+                grid[x][y] = num;
+                ++i;
+            }
+        }
+
+    }
+    while (!SolveSudoku(grid));
+
+    // Here we have a totally filled sudoku puzzle.
+    // We will remove some numbers according to the difficulty
+    int remove;
+    switch(dif)
+    {
+        case Difficulty::Easy:
+            remove = 36;
+            break;
+        case Difficulty::Intermediate:
+            remove = 48;
+            break;
+        case Difficulty::Hard:
+            remove = 56;
+            break;
+    }
+
+    while (remove > 0)
+    {
+        auto x = static_cast<size_t>(dist(gen) - 1);
+        auto y = static_cast<size_t>(dist(gen) - 1);
+
+        if (grid[x][y] != 0)
+        {
+            grid[x][y] = 0;
+            --remove;
+        }
+    }
+
+    return grid;
+}
+
 
 } // End of namespace Sudoku
 

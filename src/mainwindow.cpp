@@ -7,28 +7,17 @@
 #include <QGridLayout>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow{}), btn_storage{}, grid{}, layout{nullptr}, serifFont{"Times", 13, QFont::Bold}
+    QMainWindow(parent), ui(new Ui::MainWindow{}), dif{Sudoku::Difficulty::Easy},
+    btn_storage{}, grid{Sudoku::GeneratePuzzle(dif)}, layout{nullptr}, serifFont{"Times", 13, QFont::Bold}
 {
-    for (auto& row : btn_storage)
+  for (auto& row : btn_storage)
         row.fill(nullptr);
-
-    for (auto& row : grid)
-        row.fill(0);
 
     ui->setupUi(this);
 
     init_board();
 
-    grid = {{{3, 0, 6, 5, 0, 8, 4, 0, 0},
-                                 {5, 2, 0, 0, 0, 0, 0, 0, 0},
-                                 {0, 8, 7, 0, 0, 0, 0, 3, 1},
-                                 {0, 0, 3, 0, 1, 0, 0, 8, 0},
-                                 {9, 0, 0, 8, 6, 3, 0, 0, 5},
-                                 {0, 5, 0, 0, 9, 0, 6, 0, 0},
-                                 {1, 3, 0, 0, 0, 0, 2, 5, 0},
-                                 {0, 0, 0, 0, 0, 0, 0, 7, 4},
-                                 {7, 0, 5, 2, 0, 6, 3, 0, 0}}};
+    grid = Sudoku::GeneratePuzzle(dif);
 
     create_puzzle();
 }
@@ -84,6 +73,49 @@ void MainWindow::cell_changed(std::size_t row, std::size_t col)
             for (auto ptr : row)
                 ptr->setEditable(false);
     }
+}
+
+void MainWindow::new_game()
+{
+    clear_all();
+
+    grid = Sudoku::GeneratePuzzle(dif);
+
+    create_puzzle();
+}
+
+void MainWindow::beginner()
+{
+    if (dif != Sudoku::Difficulty::Easy)
+    {
+        dif = Sudoku::Difficulty::Easy;
+        new_game();
+    }
+}
+
+void MainWindow::intermediate()
+{
+    if (dif != Sudoku::Difficulty::Intermediate)
+    {
+        dif = Sudoku::Difficulty::Intermediate;
+        new_game();
+    }
+}
+
+void MainWindow::hard()
+{
+    if (dif != Sudoku::Difficulty::Hard)
+    {
+        dif = Sudoku::Difficulty::Hard;
+        new_game();
+    }
+}
+
+void MainWindow::solve()
+{
+    Sudoku::SolveSudoku(grid);
+    clear_highlights();
+    create_puzzle();
 }
 
 void MainWindow::init_board()
@@ -200,4 +232,18 @@ void MainWindow::cell_font_black(std::size_t row, std::size_t col)
     auto palette = btn->palette();
     palette.setColor(QPalette::Text, Qt::black);
     btn->setPalette(palette);
+}
+
+void MainWindow::clear_all()
+{
+    for (auto& row : grid)
+        row.fill(0);
+
+    for (auto& row : btn_storage)
+        for (auto ptr : row)
+        {
+            ptr->clear();
+            ptr->setEditable(true);
+        }
+    clear_highlights();
 }
