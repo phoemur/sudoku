@@ -2,7 +2,6 @@
 #define MY_TYPES_H
 
 #include <array>
-#include <type_traits>
 #include "named_type.hpp"
 
 using Puzzle_t = std::array<std::array<std::size_t, 9>, 9>;
