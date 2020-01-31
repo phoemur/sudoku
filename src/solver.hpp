@@ -3,119 +3,116 @@
 
 #include <array>
 #include <optional>
-#include <utility>
 #include <random>
+
+#include "my_types.h"
+
 
 namespace Sudoku {
 
-using puzzle_t = std::array<std::array<int, 9>, 9>;
 using namespace std;
 
-enum class Difficulty
-{
-    Easy, Intermediate, Hard
-};
-
-
 /* Searches the grid to find an entry that is still unassigned. If
-   found, a pair<row,col> is returned. Otherwise, an empty optional
+   found, a Coordinate is returned. Otherwise, an empty optional
    is returned */
-optional<pair<size_t,size_t>> FindUnassignedLocation(const puzzle_t& grid)
+optional<Coordinate> FindUnassignedLocation(const Puzzle_t& grid) noexcept
 {
     for (size_t row = 0; row < grid.size(); ++row)
         for (size_t col = 0; col < grid[row].size(); ++col)
             if (grid[row][col] == 0)
-                return std::make_pair(row, col);
+                return Coordinate{Row(row), Col(col)};
 
     return {};
 }
 
 /* Searches the row to find an entry that is the same as num.
-   If found, a pair<row,col> is returned.
+   If found, a Coordinate is returned.
    Otherwise, an empty optional is returned */
-optional<pair<size_t,size_t>> UsedInRow(const puzzle_t& grid,
-                                        size_t row,
-                                        int num)
+optional<Coordinate> UsedInRow(const Puzzle_t& grid,
+                               Row row,
+                               std::size_t num) noexcept
 {
-    for (size_t col = 0; col < grid[row].size(); ++col)
-        if (grid[row][col] == num)
-            return make_pair(row,col);
+    for (size_t col = 0; col < grid[row.get()].size(); ++col)
+        if (grid[row.get()][col] == num)
+            return Coordinate{row, Col(col)};
 
     return {};
 }
 
 /* Searches the col to find an entry that is the same as num.
-   If found, a pair<row,col> is returned.
+   If found, a Coordinate is returned.
    Otherwise, an empty optional is returned */
-optional<pair<size_t,size_t>> UsedInCol(const puzzle_t& grid,
-                                        size_t col,
-                                        int num)
+optional<Coordinate> UsedInCol(const Puzzle_t& grid,
+                               Col col,
+                               std::size_t num) noexcept
 {
     for (size_t row = 0; row < grid.size(); ++row)
-        if (grid[row][col] == num)
-            return make_pair(row,col);
+        if (grid[row][col.get()] == num)
+            return Coordinate{Row(row),col};
 
     return {};
 }
 
 /* Searches the 3x3 box to find an entry that is the same as num.
-   If found, a pair<row,col> is returned.
+   If found, a Coordinate is returned.
    Otherwise, an empty optional is returned */
-optional<pair<size_t,size_t>> UsedInBox(const puzzle_t& grid,
-                                        std::size_t boxStartRow,
-                                        std::size_t boxStartCol,
-                                        int num)
+optional<Coordinate> UsedInBox(const Puzzle_t& grid,
+                               Row boxStartRow,
+                               Col boxStartCol,
+                               std::size_t num) noexcept
 {
     for (size_t row = 0; row < 3; ++row)
         for (size_t col = 0; col < 3; ++col)
-            if (grid[row+boxStartRow][col+boxStartCol] == num)
-                return make_pair(row+boxStartRow, col+boxStartCol);
+            if (grid[row+boxStartRow.get()][col+boxStartCol.get()] == num)
+                return Coordinate{Row(row+boxStartRow.get()),
+                                  Col(col+boxStartCol.get())};
 
     return {};
 }
 
 /* Returns a boolean which indicates whether it will be legal to assign
    num to the given row,col location. */
-bool isSafe(const puzzle_t& grid,
-            std::size_t row,
-            std::size_t col,
-            int num) noexcept
+bool isSafe(const Puzzle_t& grid,
+            Row row,
+            Col col,
+            std::size_t num) noexcept
 {
     /* Check if 'num' is not already placed in current row,
        current column and current 3x3 box */
     return !UsedInRow(grid, row, num).has_value() &&
            !UsedInCol(grid, col, num).has_value() &&
-           !UsedInBox(grid, row - row%3 , col - col%3, num).has_value();
+           !UsedInBox(grid, Row(row.get() - row.get()%3), Col(col.get() - col.get()%3), num).has_value();
 }
 
 /* Takes a partially filled-in grid and attempts to assign values to
   all unassigned locations in such a way to meet the requirements
-  for Sudoku solution (non-duplication across rows, columns, and boxes) */
-bool SolveSudoku(puzzle_t& grid)
+  for Sudoku solution (non-duplication across rows, columns, and boxes)
+  Returns true if succeded, false otherwise */
+bool SolveSudoku(Puzzle_t& grid)
 {
     // If there is no unassigned location, we are done
     auto opt = FindUnassignedLocation(grid);
 
-    if (!opt.has_value()) // base case
+    if (!opt.has_value()) // base case, solution is found as we have a full grid
     {
         return true;
     }
     else
     {
-        size_t row = opt.value().first;
-        size_t col = opt.value().second;
+        auto row = opt.value().x;
+        auto col = opt.value().y;
 
-        for (int num = 1; num <= 9; ++num)
+        for (std::size_t num = 1; num <= 9; ++num)
         {
             if (isSafe(grid, row, col, num)) // if looks promising
             {
-                grid[row][col] = num; // make tentative assignment
+                grid[row.get()][col.get()] = num; // make tentative assignment
 
                 if (SolveSudoku(grid)) // recursion -> return, if success, yay!
                     return true;
 
                 // failure, undo & try again
-                grid[row][col] = 0;  // backtracking
+                grid[row.get()][col.get()] = 0;  // backtracking
             }
         }
 
@@ -127,12 +124,13 @@ bool SolveSudoku(puzzle_t& grid)
 /* Here it would have been better to use a book of many puzzles
    sorted by difficulty, but I decided to generate puzzles programatically.
    The risk is to underestimate the real difficulty */
-puzzle_t GeneratePuzzle(Difficulty dif)
+Puzzle_t GeneratePuzzle(Difficulty dif)
 {
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<int> dist(1, 9);
-    puzzle_t grid;
+    uniform_int_distribution<std::size_t> dist(1, 9);
+
+    Puzzle_t grid;
 
     do
     {
@@ -144,13 +142,13 @@ puzzle_t GeneratePuzzle(Difficulty dif)
         int i = 0;
         while (i < 10)
         {
-            auto x = static_cast<size_t>(dist(gen) - 1);
-            auto y = static_cast<size_t>(dist(gen) - 1);
-            int num = dist(gen);
+            auto x = Row(dist(gen) - 1);
+            auto y = Col(dist(gen) - 1);
+            auto num = dist(gen);
 
             if (isSafe(grid, x, y, num))
             {
-                grid[x][y] = num;
+                grid[x.get()][y.get()] = num;
                 ++i;
             }
         }
@@ -176,8 +174,8 @@ puzzle_t GeneratePuzzle(Difficulty dif)
 
     while (remove > 0)
     {
-        auto x = static_cast<size_t>(dist(gen) - 1);
-        auto y = static_cast<size_t>(dist(gen) - 1);
+        auto x = dist(gen) - 1;
+        auto y = dist(gen) - 1;
 
         if (grid[x][y] != 0)
         {

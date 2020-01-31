@@ -1,7 +1,7 @@
 #include "mylineedit.h"
 
 MyLineEdit::MyLineEdit(QWidget* parent)
-    : QLineEdit(parent)
+    : QLineEdit(parent), row(0), col(0)
 {
     setReadOnly(true);
 }

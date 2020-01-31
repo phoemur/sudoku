@@ -41,7 +41,7 @@
     <message>
         <location filename="../forms/mainwindow.ui" line="83"/>
         <source>&amp;Expert</source>
-        <translation>&amp;Difícil</translation>
+        <translation>&amp;Avançado</translation>
     </message>
     <message>
         <location filename="../forms/mainwindow.ui" line="92"/>
@@ -80,17 +80,17 @@ Author: Fernando B. Giannasi
 jan/2020</source>
         <translation>Sudoku versão 0.1
 Autor: Fernando B. Giannasi
-janeiro/2020</translation>
+jan/2020</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="69"/>
+        <location filename="../src/mainwindow.cpp" line="72"/>
         <source>Congratulations!</source>
         <translation>Parabéns!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="70"/>
+        <location filename="../src/mainwindow.cpp" line="73"/>
         <source>You won!</source>
-        <translation>Você Venceu!</translation>
+        <translation>Você venceu!</translation>
     </message>
 </context>
 </TS>

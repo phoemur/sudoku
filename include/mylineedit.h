@@ -3,6 +3,8 @@
 
 #include <QLineEdit>
 
+#include "my_types.h"
+
 class MyLineEdit : public QLineEdit
 {
 
@@ -16,14 +18,14 @@ public:
     bool isEditable() const {return editable;}
     void setEditable(bool a) {editable = a;}
 
-    std::size_t row = 0;
-    std::size_t col = 0;
+    Row row;
+    Col col;
 
 public slots:
     void back_cursor();
 
 signals:
-    void changed(std::size_t row, std::size_t col);
+    void changed(Row row, Col col);
 
 protected:
     virtual void keyPressEvent(QKeyEvent* e) override;

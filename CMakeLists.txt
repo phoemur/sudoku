@@ -4,7 +4,10 @@ project(sudoku DESCRIPTION "Simple Sudoku Game" LANGUAGES CXX VERSION 0.1.0)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include_directories("${CMAKE_SOURCE_DIR}/include")
+include_directories(
+    "${CMAKE_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/3rdParty/NamedType"
+)
 
 find_package(Qt5 REQUIRED COMPONENTS
     Core
@@ -38,6 +41,9 @@ qt5_wrap_cpp(sudoku_MOC ${HEADERS})
 
 #l10n
 qt5_create_translation(QM_FILES ${HEADERS} ${SOURCES} ${FORMS} ${CMAKE_SOURCE_DIR}/l10n/translation_pt.ts)
+
+# Further HEADERS
+set(HEADERS ${HEADERS} include/my_types.h 3rdParty/NamedType/named_type.hpp)
 
 # Compile / translate
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${sudoku_MOC} ${sudoku_UI} ${RESOURCES_ADDED} ${QM_FILES})
