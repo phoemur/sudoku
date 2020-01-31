@@ -16,9 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     init_board();
-
-    grid = Sudoku::GeneratePuzzle(dif);
-
     create_puzzle();
 }
 
