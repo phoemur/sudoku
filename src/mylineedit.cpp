@@ -20,6 +20,6 @@ void MyLineEdit::keyPressEvent(QKeyEvent *e)
         setReadOnly(true);
 
         if (this->text().size() > 0)
-            emit(changed(row, col));
+            emit changed(row, col);
     }
 }

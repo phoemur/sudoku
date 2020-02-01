@@ -158,7 +158,7 @@ Puzzle_t GeneratePuzzle(Difficulty dif)
 
     // Here we have a totally filled sudoku puzzle.
     // We will remove some numbers according to the difficulty
-    int remove;
+    int remove = 0;
     switch(dif)
     {
         case Difficulty::Easy:
